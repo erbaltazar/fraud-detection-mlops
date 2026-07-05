@@ -1,0 +1,12 @@
+# Environments
+.venv/
+env/
+__pycache__/
+
+# Data (Strictly ignore raw and processed data)
+data/
+*.csv
+*.parquet
+
+# IDE and System files
+.vscode/
