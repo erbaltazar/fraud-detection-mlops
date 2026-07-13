@@ -10,3 +10,20 @@ data/
 
 # IDE and System files
 .vscode/
+
+## terraform-S
+# Local Terraform directories
+.terraform/
+
+# Hide any accidental local state files or backups
+*.tfstate
+*.tfstate.*
+
+# Exclude crash logs
+crash.log
+crash.*.log
+
+# Exclude local variable files if accidentally created later
+*.tfvars
+*.tfvars.json
+## terraform-E
