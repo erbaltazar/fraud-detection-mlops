@@ -4,7 +4,6 @@ terraform {
   # HCP Terraform Remote Backend Configuration
   cloud {
     organization = "erbaltazar-terraform-org"
-
     workspaces {
       name = "fraud-detection-mlops-prod"
     }
