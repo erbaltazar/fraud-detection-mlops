@@ -5,12 +5,6 @@ variable "compartment_ocid" {
   type        = string
 }
 
-variable "region" {
-  description = "The OCI region to deploy into"
-  type        = string
-  default     = "ap-tokyo-1"
-}
-
 variable "vcn_cidr" {
   description = "The CIDR block for the VCN"
   type        = string
