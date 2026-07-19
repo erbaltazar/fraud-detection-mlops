@@ -7,7 +7,7 @@ provider "oci" {
 }
 
 module "oci_infrastructure" {
-  source           = "../../modules/oci_base"
+  source           = "../../modules/oci/base"
   compartment_ocid = var.compartment_ocid
   vcn_cidr         = "10.0.0.0/16"
 }
