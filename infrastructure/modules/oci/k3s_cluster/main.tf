@@ -1,9 +1,7 @@
-# 1. Look up the Availability Domain
 data "oci_identity_availability_domains" "ads" {
   compartment_id = var.compartment_ocid
 }
 
-# 2. Look up the latest Ubuntu 22.04 ARM image
 data "oci_core_images" "ubuntu_arm" {
   compartment_id           = var.compartment_ocid
   operating_system         = "Canonical Ubuntu"
@@ -13,7 +11,6 @@ data "oci_core_images" "ubuntu_arm" {
   sort_order               = "DESC"
 }
 
-# 3. Define Firewall Rules
 resource "oci_core_security_list" "k3s_security_list" {
   compartment_id = var.compartment_ocid
   vcn_id         = var.vcn_id
@@ -24,8 +21,9 @@ resource "oci_core_security_list" "k3s_security_list" {
     protocol    = "all"
   }
 
+  # SSH Access - Locked to your IP
   ingress_security_rules {
-    source   = "0.0.0.0/0"
+    source   = var.your_local_ip 
     protocol = "6" # TCP
     tcp_options {
       max = 22
@@ -33,8 +31,9 @@ resource "oci_core_security_list" "k3s_security_list" {
     }
   }
 
+  # K3s API Access - Locked to your IP
   ingress_security_rules {
-    source   = "0.0.0.0/0"
+    source   = var.your_local_ip 
     protocol = "6" # TCP
     tcp_options {
       max = 6443
@@ -43,7 +42,6 @@ resource "oci_core_security_list" "k3s_security_list" {
   }
 }
 
-# 4. Carve out the Subnet
 resource "oci_core_subnet" "k3s_subnet" {
   compartment_id    = var.compartment_ocid
   vcn_id            = var.vcn_id
@@ -52,7 +50,6 @@ resource "oci_core_subnet" "k3s_subnet" {
   security_list_ids = [oci_core_security_list.k3s_security_list.id]
 }
 
-# 5. Provision the Server
 resource "oci_core_instance" "k3s_server" {
   availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
   compartment_id      = var.compartment_ocid
@@ -77,5 +74,11 @@ resource "oci_core_instance" "k3s_server" {
 
   metadata = {
     ssh_authorized_keys = var.ssh_public_key
+    # Inject k3s installation script via cloud-init
+    user_data = base64encode(<<-EOF
+      #!/bin/bash
+      curl -sfL https://get.k3s.io | sh -
+    EOF
+    )
   }
 }
