@@ -22,8 +22,14 @@ resource "oci_core_default_route_table" "mlops_default_rt" {
   }
 }
 
-# 4. Expose the VCN ID to the orchestrator
 output "vcn_id" {
   value       = oci_core_vcn.mlops_vcn.id
   description = "The OCID of the generated Virtual Cloud Network"
+}
+
+module "k3s_compute" {
+  source           = "../../../modules/oci/k3s_cluster"
+  compartment_ocid = var.compartment_ocid
+  vcn_id           = module.oci_infrastructure.vcn_id
+  ssh_public_key   = var.ssh_public_key
 }
