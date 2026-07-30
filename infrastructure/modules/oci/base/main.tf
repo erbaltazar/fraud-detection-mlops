@@ -23,8 +23,3 @@ resource "oci_core_default_route_table" "mlops_default_rt" {
     network_entity_id = oci_core_internet_gateway.mlops_igw.id
   }
 }
-
-output "vcn_id" {
-  value       = oci_core_vcn.mlops_vcn.id
-  description = "The OCID of the generated Virtual Cloud Network"
-}
