@@ -1,0 +1,36 @@
+name: OCI Capacity Retry Loop
+
+on:
+  schedule:
+    # Runs every 15 minutes (minimum recommended interval for GitHub Actions)
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI if needed
+
+jobs:
+  trigger-terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger HCP Terraform Run via API
+        run: |
+          curl \
+            --header "Authorization: Bearer ${{ secrets.TF_API_TOKEN }}" \
+            --header "Content-Type: application/vnd.api+json" \
+            --request POST \
+            --data '{
+              "data": {
+                "attributes": {
+                  "is-destroy": false,
+                  "message": "Scheduled automated retry via GitHub Actions"
+                },
+                "type": "runs",
+                "relationships": {
+                  "workspace": {
+                    "data": {
+                      "type": "workspaces",
+                      "id": "'"${{ secrets.TF_WORKSPACE_ID }}"'"
+                    }
+                  }
+                }
+              }
+            }' \
+            https://app.terraform.io/api/v2/runs
