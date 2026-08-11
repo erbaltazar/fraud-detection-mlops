@@ -27,3 +27,5 @@ crash.*.log
 *.tfvars
 *.tfvars.json
 ## terraform-E
+
+retry_loop.ps1
