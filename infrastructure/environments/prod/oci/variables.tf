@@ -16,3 +16,4 @@ variable "infisical_client_secret" {
   description = "Infisical Universal Auth Client Secret"
   sensitive   = true
 }
+
