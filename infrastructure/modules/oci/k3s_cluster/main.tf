@@ -23,7 +23,7 @@ resource "oci_core_security_list" "k3s_security_list" {
 
   # SSH Access - Locked to your IP
   ingress_security_rules {
-    source   = var.your_local_ip 
+    source   = var.local_ip 
     protocol = "6" # TCP
     tcp_options {
       max = 22
@@ -33,7 +33,7 @@ resource "oci_core_security_list" "k3s_security_list" {
 
   # K3s API Access - Locked to your IP
   ingress_security_rules {
-    source   = var.your_local_ip 
+    source   = var.local_ip 
     protocol = "6" # TCP
     tcp_options {
       max = 6443

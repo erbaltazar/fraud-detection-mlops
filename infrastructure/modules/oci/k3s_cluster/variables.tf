@@ -19,7 +19,7 @@ variable "ssh_public_key" {
   type        = string
 }
 
-variable "your_local_ip" {
+variable "local_ip" {
   description = "Your specific public IP address for secure SSH and k3s API access (e.g., 203.0.113.50/32)"
   type        = string
 }
