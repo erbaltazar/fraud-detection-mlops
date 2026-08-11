@@ -17,5 +17,5 @@ module "k3s_compute" {
   compartment_ocid = var.compartment_ocid
   vcn_id           = module.oci_infrastructure.vcn_id
   ssh_public_key   = var.ssh_public_key
-  your_local_ip    = var.local_ip
+  local_ip    = var.local_ip
 }
