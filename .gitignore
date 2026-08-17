@@ -28,4 +28,9 @@ crash.*.log
 *.tfvars.json
 ## terraform-E
 
+# Local Model Artifacts
+models/
+*.joblib
+*.pkl
+
 retry_loop.ps1
