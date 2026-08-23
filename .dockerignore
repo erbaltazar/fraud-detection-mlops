@@ -1,0 +1,9 @@
+.git/
+.venv/
+__pycache__/
+data/
+.gitignore
+infrastructure/
+*.ps1
+README.md
+LICENSE
