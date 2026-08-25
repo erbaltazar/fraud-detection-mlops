@@ -39,6 +39,14 @@ resource "oci_core_security_list" "k3s_security_list" {
       max = 6443
       min = 6443
     }
+    ingress_security_rules {
+    protocol    = "6" # TCP
+    source      = "0.0.0.0/0" # Allow public internet access to the API
+    tcp_options {
+      max = 80
+      min = 80
+    }
+    description = "Allow HTTP traffic to K3s LoadBalancer"
   }
 }
 
