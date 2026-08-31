@@ -6,6 +6,11 @@ variable "region" { type = string }
 variable "compartment_ocid" { type = string }
 variable "ssh_public_key" { type = string }
 variable "local_ip" { type = string }
+variable "ssh_private_key" {
+  description = "SSH private key for remote execution"
+  type        = string
+  sensitive   = true
+}
 variable "infisical_client_id" {
   type        = string
   description = "Infisical Universal Auth Client ID"

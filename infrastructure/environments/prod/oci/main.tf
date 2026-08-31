@@ -18,7 +18,7 @@ module "k3s_compute" {
   vcn_id           = module.oci_infrastructure.vcn_id
   ssh_public_key   = var.ssh_public_key
   local_ip         = var.local_ip
-  private_key             = var.private_key
+  ssh_private_key         = var.ssh_private_key
   infisical_client_id     = var.infisical_client_id
   infisical_client_secret = var.infisical_client_secret
 }

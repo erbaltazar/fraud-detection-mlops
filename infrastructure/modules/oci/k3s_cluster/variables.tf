@@ -24,7 +24,7 @@ variable "local_ip" {
   type        = string
 }
 
-variable "private_key" {
+variable "ssh_private_key" {
   description = "SSH private key for remote execution"
   type        = string
   sensitive   = true
