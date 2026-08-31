@@ -93,3 +93,22 @@ resource "oci_core_instance" "k3s_server" {
     )
   }
 }
+
+resource "null_resource" "bootstrap_infisical" {
+  depends_on = [oci_core_instance.k3s_server]
+
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = var.private_key
+    host        = oci_core_instance.k3s_server.public_ip
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 60", # Buffer for k3s cloud-init completion
+      "sudo k3s kubectl create namespace infisical",
+      "sudo k3s kubectl create secret generic infisical-auth --from-literal=clientId=${var.infisical_client_id} --from-literal=clientSecret=${var.infisical_client_secret} -n infisical"
+    ]
+  }
+}

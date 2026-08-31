@@ -23,3 +23,21 @@ variable "local_ip" {
   description = "Your specific public IP address for secure SSH and k3s API access (e.g., 203.0.113.50/32)"
   type        = string
 }
+
+variable "private_key" {
+  description = "SSH private key for remote execution"
+  type        = string
+  sensitive   = true
+}
+
+variable "infisical_client_id" {
+  description = "Infisical Client ID"
+  type        = string
+  sensitive   = true
+}
+
+variable "infisical_client_secret" {
+  description = "Infisical Client Secret"
+  type        = string
+  sensitive   = true
+}
