@@ -106,7 +106,7 @@ resource "null_resource" "bootstrap_infisical" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    ssh_private_key = var.ssh_private_key
+    private_key = var.ssh_private_key
     host        = oci_core_instance.k3s_server.public_ip
   }
 
