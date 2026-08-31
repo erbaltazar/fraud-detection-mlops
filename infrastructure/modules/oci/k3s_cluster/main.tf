@@ -92,6 +92,12 @@ resource "oci_core_instance" "k3s_server" {
     EOF
     )
   }
+  
+  lifecycle {
+    ignore_changes = [
+      source_details
+    ]
+  }
 }
 
 resource "null_resource" "bootstrap_infisical" {
