@@ -43,11 +43,14 @@ data "infisical_secrets" "grafana_creds" {
 
 # 3. Dynamically pull the K3s config for HCP Terraform
 data "external" "kubeconfig" {
-  program = ["bash", "-c", "ssh -i <(echo \"$SSH_KEY\") -o StrictHostKeyChecking=no ubuntu@${module.k3s_compute.k3s_public_ip} 'sudo cat /etc/rancher/k3s/k3s.yaml' | sed 's/127.0.0.1/${module.k3s_compute.k3s_public_ip}/g' | jq -Rs '{config: .}'"]
+  program = [
+    "bash", "-c",
+    "printf '%s\\n' \"$1\" > /tmp/tf_key && chmod 600 /tmp/tf_key && ssh -i /tmp/tf_key -o StrictHostKeyChecking=no ubuntu@$2 'sudo cat /etc/rancher/k3s/k3s.yaml' | sed \"s/127.0.0.1/$2/g\" | jq -Rs '{config: .}'",
+    "_",
+    var.ssh_private_key,
+    module.k3s_compute.k3s_public_ip
+  ]
   
-  environment = {
-    SSH_KEY = var.ssh_private_key
-  }
   depends_on = [module.k3s_compute]
 }
 
