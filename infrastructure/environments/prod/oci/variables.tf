@@ -21,4 +21,8 @@ variable "infisical_client_secret" {
   description = "Infisical Universal Auth Client Secret"
   sensitive   = true
 }
+variable "infisical_workspace_id" {
+  description = "The Workspace (Project) ID from Infisical"
+  type        = string
+}
 
