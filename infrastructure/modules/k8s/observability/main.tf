@@ -1,5 +1,7 @@
 resource "kubernetes_namespace" "monitoring" {
-  metadata { name = "monitoring" }
+  metadata {
+    name = "monitoring"
+  }
 }
 
 resource "kubernetes_secret" "grafana_auth" {
@@ -21,13 +23,48 @@ resource "helm_release" "kube_prometheus" {
   
   depends_on = [kubernetes_secret.grafana_auth]
 
-  set { name = "prometheus.prometheusSpec.resources.requests.memory", value = "512Mi" }
-  set { name = "prometheus.prometheusSpec.resources.limits.memory", value = "1Gi" }
-  set { name = "grafana.enabled", value = "false" }
-  set { name = "alertmanager.enabled", value = "false" }
-  set { name = "prometheus.prometheusSpec.remoteWrite[0].url", value = var.grafana_remote_url }
-  set { name = "prometheus.prometheusSpec.remoteWrite[0].basicAuth.username.name", value = kubernetes_secret.grafana_auth.metadata[0].name }
-  set { name = "prometheus.prometheusSpec.remoteWrite[0].basicAuth.username.key", value = "username" }
-  set { name = "prometheus.prometheusSpec.remoteWrite[0].basicAuth.password.name", value = kubernetes_secret.grafana_auth.metadata[0].name }
-  set { name = "prometheus.prometheusSpec.remoteWrite[0].basicAuth.password.key", value = "password" }
+  set {
+    name  = "prometheus.prometheusSpec.resources.requests.memory"
+    value = "512Mi"
+  }
+  
+  set {
+    name  = "prometheus.prometheusSpec.resources.limits.memory"
+    value = "1Gi"
+  }
+  
+  set {
+    name  = "grafana.enabled"
+    value = "false"
+  }
+  
+  set {
+    name  = "alertmanager.enabled"
+    value = "false"
+  }
+  
+  set {
+    name  = "prometheus.prometheusSpec.remoteWrite[0].url"
+    value = var.grafana_remote_url
+  }
+  
+  set {
+    name  = "prometheus.prometheusSpec.remoteWrite[0].basicAuth.username.name"
+    value = kubernetes_secret.grafana_auth.metadata[0].name
+  }
+  
+  set {
+    name  = "prometheus.prometheusSpec.remoteWrite[0].basicAuth.username.key"
+    value = "username"
+  }
+  
+  set {
+    name  = "prometheus.prometheusSpec.remoteWrite[0].basicAuth.password.name"
+    value = kubernetes_secret.grafana_auth.metadata[0].name
+  }
+  
+  set {
+    name  = "prometheus.prometheusSpec.remoteWrite[0].basicAuth.password.key"
+    value = "password"
+  }
 }
