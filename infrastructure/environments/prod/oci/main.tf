@@ -25,9 +25,13 @@ module "k3s_compute" {
 
 # 1. Authenticate with Infisical
 provider "infisical" {
-  host          = "https://app.infisical.com"
-  client_id     = var.infisical_client_id
-  client_secret = var.infisical_client_secret
+  host = "https://app.infisical.com"
+  auth = {
+    universal = {
+      client_id     = var.infisical_client_id
+      client_secret = var.infisical_client_secret
+    }
+  }
 }
 
 # 2. Fetch the Grafana secrets dynamically from the prod environment
