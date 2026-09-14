@@ -14,18 +14,6 @@ terraform {
       source  = "oracle/oci"
       version = "~> 5.0" 
     }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.11"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.23"
-    }
-    infisical = {
-      source  = "infisical/infisical"
-      version = "~> 0.19"
-    }
   }
 
   required_version = ">= 1.15.0"
