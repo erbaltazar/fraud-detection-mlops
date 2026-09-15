@@ -41,7 +41,7 @@ kind: Service
 metadata:
   name: fraud-api-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: fraud-api
   ports:
