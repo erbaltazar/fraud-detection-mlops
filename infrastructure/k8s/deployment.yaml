@@ -34,33 +34,3 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "500m"
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: fraud-api-service
-spec:
-  type: ClusterIP
-  selector:
-    app: fraud-api
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8000
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: fraud-api-ingress
-spec:
-  rules:
-  - http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: fraud-api-service
-            port:
-              number: 80
