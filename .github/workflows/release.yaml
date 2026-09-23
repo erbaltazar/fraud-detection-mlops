@@ -8,6 +8,8 @@ on:
       - 'src/**'
       - 'Dockerfile'
       - 'requirements.txt'
+      - '.github/workflows/release.yaml'
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
