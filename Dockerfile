@@ -8,7 +8,7 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# CRITICAL FIX 1: Install system-level C++ libraries required by XGBoost on Debian Slim
+# Install system-level C++ libraries required by XGBoost on Debian Slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
@@ -16,15 +16,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy ONLY the requirements file first to leverage Docker layer caching
 COPY requirements.txt .
 
-# Your custom Windows UTF-16 workaround (Maintained)
+# Windows UTF-16 workaround
 RUN python -c "import pathlib; raw=pathlib.Path('requirements.txt').read_bytes(); text=raw.decode('utf-16' if raw.startswith((b'\xff\xfe', b'\xfe\xff')) else 'utf-8', 'ignore'); pathlib.Path('clean.txt').write_text('\n'.join(l for l in text.splitlines() if 'pywinpty' not in l.lower()), encoding='utf-8')" && \
     pip install --no-cache-dir -r clean.txt
 
 # Copy the source code into the container
 COPY src/ ./src/
-
-# CRITICAL FIX 2: We MUST copy the compiled model artifact so the API can load it into RAM
-COPY models/ ./models/
 
 # Expose the web port
 EXPOSE 8000
