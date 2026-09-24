@@ -3,10 +3,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fraud-api-deployment
-  labels:
-    app: fraud-api
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: fraud-api
@@ -15,22 +13,25 @@ spec:
       labels:
         app: fraud-api
     spec:
+      volumes:
+        - name: model-storage
+          emptyDir: {}
+      
+      initContainers:
+        - name: model-downloader
+          image: alpine:latest
+          command: ["sh", "-c"]
+          args:
+            - "wget -O /mnt/models/xgboost_fraud_model.joblib 'https://objectstorage.ap-tokyo-1.oraclecloud.com/p/kWGZ5sF7gaToj52im8pcftw6AHQC61TIFDIZzPeQxyj4nhlMKbjzRxoy0E30VixM/n/nr2fetnoyli4/b/fraud-detection-mlops-models/o/xgboost_fraud_model.joblib'"
+          volumeMounts:
+            - name: model-storage
+              mountPath: /mnt/models
+              
       containers:
-      - name: fraud-api
-        image: erbaltazar/fraud-api:v1
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8000
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 15
-          periodSeconds: 20
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
+        - name: fraud-api
+          image: ghcr.io/erbaltazar/fraud-detection-mlops:latest 
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: model-storage
+              mountPath: /app/models
