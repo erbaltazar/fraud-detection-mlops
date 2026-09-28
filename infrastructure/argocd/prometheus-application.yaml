@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://prometheus-community.github.io/helm-charts'
+    targetRevision: 62.7.0 
+    chart: kube-prometheus-stack
+    helm:
+      # CRITICAL: These strict limits protect your 12GB ARM node from OOM evictions.
+      values: |
+        prometheus:
+          prometheusSpec:
+            resources:
+              requests:
+                memory: "512Mi"
+              limits:
+                memory: "1024Mi"
+        grafana:
+          resources:
+            requests:
+              memory: "128Mi"
+            limits:
+              memory: "256Mi"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
