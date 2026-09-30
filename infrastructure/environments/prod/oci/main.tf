@@ -14,16 +14,16 @@ provider "infisical" {
 
 # Authorize the external providers dynamically
 provider "aiven" {
-  api_token = data.infisical_secret.aiven_token.value
+  api_token = ephemeral.infisical_secret.aiven_token.value
 }
 
 provider "upstash" {
-  email   = data.infisical_secret.upstash_email.value
-  api_key = data.infisical_secret.upstash_key.value
+  email   = ephemeral.infisical_secret.upstash_email.value
+  api_key = ephemeral.infisical_secret.upstash_key.value
 }
 
 provider "neon" {
-  api_key = data.infisical_secret.neon_key.value
+  api_key = ephemeral.infisical_secret.neon_key.value
 }
 
 module "oci_infrastructure" {
@@ -45,5 +45,5 @@ module "k3s_compute" {
 
 module "external_data_services" {
   source             = "../../../modules/external_data"
-  aiven_project_name = var.aiven_project_name
+  aiven_project_name = ephemeral.infisical_secret.aiven_project.value
 }
