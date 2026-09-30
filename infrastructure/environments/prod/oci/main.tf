@@ -41,4 +41,5 @@ module "k3s_compute" {
 
 module "external_data_services" {
   source             = "../../../modules/external_data"
+  neon_org_id = var.neon_org_id
 }

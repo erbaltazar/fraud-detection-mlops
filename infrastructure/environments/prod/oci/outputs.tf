@@ -8,11 +8,6 @@ output "k3s_server_ip" {
   description = "The public IP address required for remote terminal SSH access"
 }
 
-output "kafka_service_uri" {
-  value     = module.external_data_services.kafka_service_uri
-  sensitive = true
-}
-
 output "redis_endpoint" {
   value = module.external_data_services.redis_endpoint
 }
