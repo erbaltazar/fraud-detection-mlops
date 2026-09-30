@@ -8,7 +8,8 @@ terraform {
 # 1. Feast Online Store (Upstash Serverless Redis)
 resource "upstash_redis_database" "feast_online_store" {
   database_name = "mlops-feast-store"
-  region        = "global" 
+  region        = "global"
+  primary_region = "ap-northeast-1"
   tls           = true
 }
 
@@ -18,4 +19,5 @@ resource "neon_project" "mlops_backend" {
   region_id  = "aws-ap-southeast-1" 
   pg_version = 15
   org_id     = var.neon_org_id
+  history_retention_seconds = 21600
 }
