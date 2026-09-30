@@ -14,6 +14,22 @@ terraform {
       source  = "oracle/oci"
       version = "~> 5.0" 
     }
+    aiven = {
+      source  = "aiven/aiven"
+      version = "~> 4.0"
+    }
+    upstash = {
+      source  = "upstash/upstash"
+      version = "~> 1.5"
+    }
+    neon = {
+      source  = "kislerdm/neon"
+      version = "~> 0.2"
+    }
+    infisical = { 
+      source  = "infisical/infisical"
+      version = "~> 0.19"
+    }
   }
 
   required_version = ">= 1.15.0"

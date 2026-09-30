@@ -6,6 +6,26 @@ provider "oci" {
   region       = var.region
 }
 
+# Authenticate Terraform to your Vault
+provider "infisical" {
+  client_id     = var.infisical_client_id
+  client_secret = var.infisical_client_secret
+}
+
+# Authorize the external providers dynamically
+provider "aiven" {
+  api_token = data.infisical_secret.aiven_token.value
+}
+
+provider "upstash" {
+  email   = data.infisical_secret.upstash_email.value
+  api_key = data.infisical_secret.upstash_key.value
+}
+
+provider "neon" {
+  api_key = data.infisical_secret.neon_key.value
+}
+
 module "oci_infrastructure" {
   source           = "../../../modules/oci/base"
   compartment_ocid = var.compartment_ocid
@@ -21,4 +41,9 @@ module "k3s_compute" {
   ssh_private_key         = var.ssh_private_key
   infisical_client_id     = var.infisical_client_id
   infisical_client_secret = var.infisical_client_secret
+}
+
+module "external_data_services" {
+  source             = "../../../modules/external_data"
+  aiven_project_name = var.aiven_project_name
 }
