@@ -24,7 +24,7 @@ resource "aiven_kafka" "fraud_stream" {
 # 2. Feast Online Store (Upstash Serverless Redis)
 resource "upstash_redis_database" "feast_online_store" {
   database_name = "mlops-feast-store"
-  region        = "ap-northeast-1" 
+  region        = "global" 
   tls           = true
 }
 
