@@ -45,5 +45,5 @@ module "k3s_compute" {
 
 module "external_data_services" {
   source             = "../../../modules/external_data"
-  aiven_project_name = ephemeral.infisical_secret.aiven_project.value
+  aiven_project_name = var.aiven_project_name
 }
