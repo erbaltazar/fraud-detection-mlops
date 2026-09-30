@@ -14,10 +14,6 @@ terraform {
       source  = "oracle/oci"
       version = "~> 5.0" 
     }
-    aiven = {
-      source  = "aiven/aiven"
-      version = "~> 4.0"
-    }
     upstash = {
       source  = "upstash/upstash"
       version = "~> 1.5"

@@ -13,10 +13,6 @@ provider "infisical" {
 }
 
 # Authorize the external providers dynamically
-provider "aiven" {
-  api_token = ephemeral.infisical_secret.aiven_token.value
-}
-
 provider "upstash" {
   email   = ephemeral.infisical_secret.upstash_email.value
   api_key = ephemeral.infisical_secret.upstash_key.value
@@ -45,5 +41,4 @@ module "k3s_compute" {
 
 module "external_data_services" {
   source             = "../../../modules/external_data"
-  aiven_project_name = var.aiven_project_name
 }
