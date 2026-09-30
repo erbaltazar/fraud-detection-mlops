@@ -25,7 +25,7 @@ variable "infisical_workspace_id" {
   description = "The Workspace (Project) ID from Infisical"
   type        = string
 }
-variable "aiven_project_name" {
+variable "neon_org_id" {
   type        = string
-  description = "Aiven project name for Kafka"
+  description = "The Neon Organization ID for the Postgres project"
 }

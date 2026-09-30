@@ -6,11 +6,6 @@ terraform {
   }
 }
 
-variable "aiven_project_name" {
-  type        = string
-  description = "Aiven project name for Kafka"
-}
-
 # 1. Event Streaming Broker (Aiven Free Apache Kafka)
 resource "aiven_kafka" "fraud_stream" {
   project                 = var.aiven_project_name
@@ -33,4 +28,5 @@ resource "neon_project" "mlops_backend" {
   name       = "mlops-proj"
   region_id  = "aws-ap-southeast-1" 
   pg_version = 15
+  org_id     = var.neon_org_id
 }
