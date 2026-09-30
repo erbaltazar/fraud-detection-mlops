@@ -5,13 +5,6 @@ ephemeral "infisical_secret" "aiven_token" {
   folder_path  = "/"
 }
 
-ephemeral "infisical_secret" "aiven_project" {
-  name         = "AIVEN_PROJECT_NAME"
-  env_slug     = "prod"
-  workspace_id = var.infisical_workspace_id
-  folder_path  = "/"
-}
-
 ephemeral "infisical_secret" "upstash_email" {
   name         = "UPSTASH_EMAIL"
   env_slug     = "prod"
