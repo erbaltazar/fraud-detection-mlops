@@ -29,3 +29,6 @@ variable "neon_org_id" {
   type        = string
   description = "The Neon Organization ID for the Postgres project"
 }
+variable "aiven_project_name" {
+  type = string
+}

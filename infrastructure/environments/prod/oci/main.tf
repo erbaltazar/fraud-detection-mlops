@@ -22,6 +22,10 @@ provider "neon" {
   api_key = ephemeral.infisical_secret.neon_key.value
 }
 
+provider "aiven" {
+  api_token = ephemeral.infisical_secret.aiven_token.value
+}
+
 module "oci_infrastructure" {
   source           = "../../../modules/oci/base"
   compartment_ocid = var.compartment_ocid
@@ -42,4 +46,5 @@ module "k3s_compute" {
 module "external_data_services" {
   source             = "../../../modules/external_data"
   neon_org_id = var.neon_org_id
+  aiven_project_name = var.aiven_project_name
 }

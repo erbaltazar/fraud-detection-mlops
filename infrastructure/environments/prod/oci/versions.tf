@@ -26,6 +26,10 @@ terraform {
       source  = "infisical/infisical"
       version = "~> 0.19"
     }
+    aiven = {
+      source  = "aiven/aiven"
+      version = "~> 4.0"
+    }
   }
 
   required_version = ">= 1.15.0"

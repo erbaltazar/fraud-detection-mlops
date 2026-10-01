@@ -13,3 +13,8 @@ output "neon_project_id" {
   value       = neon_project.mlops_backend.id
   description = "Neon PostgreSQL Project ID"
 }
+
+output "kafka_service_uri" {
+  value     = aiven_kafka.fraud_stream.service_uri
+  sensitive = true
+}

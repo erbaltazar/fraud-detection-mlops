@@ -20,3 +20,8 @@ output "redis_password" {
 output "neon_project_id" {
   value = module.external_data_services.neon_project_id
 }
+
+output "kafka_service_uri" {
+  value     = module.external_data_services.kafka_service_uri
+  sensitive = true
+}
