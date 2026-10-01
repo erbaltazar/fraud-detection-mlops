@@ -27,7 +27,7 @@ resource "neon_project" "mlops_backend" {
 resource "aiven_kafka" "fraud_stream" {
   project                 = var.aiven_project_name
   cloud_name              = "aws-ap-southeast-1"
-  plan                    = "free"
+  plan                    = "free-0"
   service_name            = "mlops-fraud-stream"
   maintenance_window_dow  = "sunday"
   maintenance_window_time = "10:00:00"
