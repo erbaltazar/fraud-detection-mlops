@@ -28,4 +28,5 @@ resource "aiven_kafka" "fraud_stream" {
   project                 = var.aiven_project_name
   plan                    = "free-0"
   service_name            = "mlops-fraud-stream"
+  cloud_name              = "external-southeast-asia" 
 }
