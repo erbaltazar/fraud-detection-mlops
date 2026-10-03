@@ -6,7 +6,6 @@ metadata:
 spec:
   project: default
   source:
-    # CRITICAL: Update this URL to match your exact GitHub repository
     repoURL: 'https://github.com/erbaltazar/fraud-detection-mlops.git'
     targetRevision: main
     path: infrastructure/k8s
