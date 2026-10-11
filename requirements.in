@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+mlflow
+feast
+confluent-kafka
+psycopg2-binary
+xgboost
+pandas
+joblib
