@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow-deployment
+  namespace: default
+  labels:
+    app: mlflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+        - name: mlflow
+          # Reusing your multi-arch image since mlflow is now locked in requirements.txt
+          image: ghcr.io/erbaltazar/fraud-detection-mlops:latest
+          command: ["mlflow", "server"]
+          args:
+            - "--host=0.0.0.0"
+            - "--port=5000"
+            - "--backend-store-uri=$(NEON_DATABASE_URL)"
+            - "--default-artifact-root=/mnt/mlflow/artifacts"
+          envFrom:
+            - secretRef:
+                name: fraud-api-secrets
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          volumeMounts:
+            - name: mlflow-artifacts
+              mountPath: /mnt/mlflow/artifacts
+      volumes:
+        - name: mlflow-artifacts
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow-service
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: mlflow
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000

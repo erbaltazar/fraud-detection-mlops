@@ -1,10 +1,12 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fraud-api-deployment
+  name: fraud-detection-api
+  namespace: default
+  labels:
+    app: fraud-api
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: fraud-api
@@ -13,25 +15,33 @@ spec:
       labels:
         app: fraud-api
     spec:
-      volumes:
-        - name: model-storage
-          emptyDir: {}
-      
-      initContainers:
-        - name: model-downloader
-          image: alpine:latest
-          command: ["sh", "-c"]
-          args:
-            - "wget -O /mnt/models/xgboost_fraud_model.joblib 'https://objectstorage.ap-tokyo-1.oraclecloud.com/p/kWGZ5sF7gaToj52im8pcftw6AHQC61TIFDIZzPeQxyj4nhlMKbjzRxoy0E30VixM/n/nr2fetnoyli4/b/fraud-detection-mlops-models/o/xgboost_fraud_model.joblib'"
-          volumeMounts:
-            - name: model-storage
-              mountPath: /mnt/models
-              
       containers:
         - name: fraud-api
-          image: ghcr.io/erbaltazar/fraud-detection-mlops:latest 
+          image: ghcr.io/erbaltazar/fraud-detection-api:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
-          volumeMounts:
-            - name: model-storage
-              mountPath: /app/models
+          
+          # Infisical Operator Integration
+          envFrom:
+            - secretRef:
+                name: fraud-api-secrets
+          env:
+            - name: MLFLOW_TRACKING_URI
+              value: "http://mlflow-service:5000"
+              
+          # Strict constraints for your 12GB ARM node
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+              
+          readinessProbe:
+            httpGet:
+              path: /openapi.json
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10

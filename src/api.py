@@ -1,64 +1,81 @@
-# src/api.py
-import joblib
+import os
+from contextlib import asynccontextmanager
 import pandas as pd
+import mlflow.pyfunc
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
+from feast import FeatureStore
 
-app = FastAPI(title="Enterprise Fraud Detection API", version="1.0.0")
+# Global state
+store = None
+model = None
 
-try:
-    print("Loading XGBoost model artifact...")
-    model = joblib.load("models/xgboost_fraud_model.joblib")
-    # Extract the exact column names and order the model saw during training
-    EXPECTED_COLUMNS = model.feature_names_in_
-    print("Model loaded successfully.")
-except Exception as e:
-    print(f"CRITICAL ERROR: Could not load model. {e}")
-    model = None
-    EXPECTED_COLUMNS = []
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global store, model
+    
+    # 1. Fix: Dynamic Absolute Path for Feast
+    current_dir = os.path.dirname(__file__)
+    feast_repo_path = os.path.join(current_dir, "features")
+    
+    try:
+        store = FeatureStore(repo_path=feast_repo_path)
+        print("Feast Feature Store initialized successfully.")
+    except Exception as e:
+        print(f"Feast initialization warning: {e}")
 
-class TransactionPayload(BaseModel):
-    model_config = ConfigDict(extra='allow')
-    income: float
-    name_email_similarity: float
-    payment_type: str
-    device_os: str
+    # MLflow Setup
+    MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://mlflow-service:5000")
+    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+    
+    try:
+        model = mlflow.pyfunc.load_model("models:/fraud_xgboost_model/Production")
+        print("Model loaded successfully from MLflow.")
+    except Exception as e:
+        print(f"Warning: Model not found in MLflow. Expected on first boot. Error: {e}")
+        
+    # 2. Fix: Yield control back to FastAPI application
+    yield
+    print("Shutting down API...")
+
+# Initialize FastAPI with the modern lifespan context
+app = FastAPI(title="Fraud Detection API", version="2.0.1", lifespan=lifespan)
+
+class TransactionRequest(BaseModel):
+    transaction_id: str
 
 @app.post("/predict")
-def predict_fraud(payload: TransactionPayload):
-    if model is None:
-        raise HTTPException(status_code=500, detail="Inference engine is offline.")
+async def predict(request: TransactionRequest):
+    if not model or not store:
+        raise HTTPException(status_code=503, detail="Model or Feature Store not fully initialized.")
 
-    # 1. Unpack JSON to DataFrame
-    input_data = payload.model_dump()
-    df = pd.DataFrame([input_data])
-    
-    # 2. Schema Enforcement: Force the DataFrame to match the training columns exactly.
-    # Any missing columns from the payload will be filled with NaN.
-    # Any extra columns sent by the client will be dropped.
-    df = df.reindex(columns=EXPECTED_COLUMNS)
-    
-    # 3. Categorical Formatting
-    categorical_cols = ['payment_type', 'employment_status', 'housing_status', 'source', 'device_os']
-    for col in categorical_cols:
-        if col in df.columns:
-            df[col] = df[col].astype('category')
-
-    # 4. Math Execution
     try:
-        probability = float(model.predict_proba(df)[0, 1])
-        is_fraud = int(probability > 0.5)
-
-        return {
-            "status": "blocked" if is_fraud else "approved",
-            "fraud_probability": round(probability, 4)
-        }
+        feast_response = store.get_online_features(
+            features=[
+                "transaction_features:income",
+                "transaction_features:name_email_similarity",
+                "transaction_features:payment_type",
+                "transaction_features:device_os"
+            ],
+            entity_rows=[{"transaction_id": request.transaction_id}]
+        )
+        feature_df = feast_response.to_df()
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Inference failed. Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Feast retrieval failed: {e}")
 
-# Add a health check endpoint for Kubernetes
-@app.get("/health")
-def health_check():
-    if model is not None:
-        return {"status": "healthy"}
-    raise HTTPException(status_code=503, detail="Model not loaded")
+    # 3. Fix: Explicitly filter columns for the model
+    expected_columns = ["income", "name_email_similarity", "payment_type", "device_os"]
+    
+    try:
+        # Drops the transaction_id and passes only the 4 features XGBoost expects
+        model_input_df = feature_df[expected_columns]
+        prediction = model.predict(model_input_df)
+        
+        return {
+            "transaction_id": request.transaction_id,
+            "fraud_probability": float(prediction[0])
+        }
+    except KeyError as e:
+        raise HTTPException(status_code=500, detail=f"Missing expected features from Feast: {e}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Inference failed: {e}")
