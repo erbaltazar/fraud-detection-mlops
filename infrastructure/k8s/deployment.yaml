@@ -19,7 +19,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: fraud-api
-          image: ghcr.io/erbaltazar/fraud-detection-api:latest
+          image: ghcr.io/erbaltazar/fraud-detection-mlops:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
