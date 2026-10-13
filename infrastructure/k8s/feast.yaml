@@ -19,6 +19,7 @@ spec:
       containers:
         - name: feast
           image: ghcr.io/erbaltazar/fraud-detection-mlops:latest
+          workingDir: /app/src/features
           command: ["feast", "serve"]
           args:
             - "--host=0.0.0.0"
