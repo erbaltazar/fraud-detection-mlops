@@ -3,7 +3,7 @@ uvicorn
 mlflow
 feast
 confluent-kafka
-psycopg2-binary
+psycopg[binary]
 xgboost
 pandas
 joblib
