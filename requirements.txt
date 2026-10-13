@@ -237,6 +237,8 @@ psycopg==3.3.6
     # via -r requirements.in
 psycopg-binary==3.3.6
     # via psycopg
+psycopg-pool==3.3.3
+    # via -r requirements.in
 pyarrow==25.0.1
     # via
     #   dask
@@ -341,6 +343,7 @@ typing-extensions==4.16.0
     #   opentelemetry-api
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
+    #   psycopg-pool
     #   pydantic
     #   pydantic-core
     #   sqlalchemy

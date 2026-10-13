@@ -4,6 +4,7 @@ mlflow
 feast
 confluent-kafka
 psycopg[binary]
+psycopg_pool
 xgboost
 pandas
 joblib
