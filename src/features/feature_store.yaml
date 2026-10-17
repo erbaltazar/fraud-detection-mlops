@@ -6,4 +6,8 @@ online_store:
   connection_string: rediss://:${FEAST_REDIS_PASSWORD}@${FEAST_REDIS_HOST}
 offline_store:
   type: postgres
-  connection_string: ${NEON_DATABASE_URL}
+  host: ${POSTGRES_HOST}
+  port: 5432
+  database: ${POSTGRES_DB}
+  user: ${POSTGRES_USER}
+  password: ${POSTGRES_PASSWORD}
