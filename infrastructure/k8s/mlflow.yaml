@@ -26,6 +26,7 @@ spec:
             - "--port=5000"
             - "--backend-store-uri=$(NEON_DATABASE_URL)"
             - "--default-artifact-root=/mnt/mlflow/artifacts"
+            - "--workers=1"
           envFrom:
             - secretRef:
                 name: fraud-api-secrets

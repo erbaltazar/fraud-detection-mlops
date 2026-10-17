@@ -8,3 +8,4 @@ psycopg_pool
 xgboost
 pandas
 joblib
+redis

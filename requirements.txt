@@ -281,6 +281,8 @@ pyyaml==6.0.3
     #   feast
     #   mlflow-skinny
     #   uvicorn
+redis==8.1.0
+    # via -r requirements.in
 requests==2.34.2
     # via
     #   databricks-sdk
