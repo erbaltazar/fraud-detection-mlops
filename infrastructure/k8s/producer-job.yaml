@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-data-stream
+spec:
+  template:
+    spec:
+      containers:
+      - name: producer
+        image: ghcr.io/erbaltazar/fraud-detection-mlops:latest
+        command: ["python", "src/streaming/producer.py"]
+        envFrom:
+        - secretRef:
+            name: fraud-api-secrets
+      restartPolicy: Never
+  backoffLimit: 1
