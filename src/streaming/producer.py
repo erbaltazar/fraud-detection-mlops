@@ -3,6 +3,7 @@ import json
 import pandas as pd
 from kafka import KafkaProducer
 import os
+import tempfile
 
 class TokenBucketRateLimiter:
     def __init__(self, rate_limit_per_second):
@@ -17,24 +18,41 @@ class TokenBucketRateLimiter:
             self.tokens = min(self.rate_limit, self.tokens + elapsed * self.rate_limit)
             self.last_updated = now
             if self.tokens < 1:
-                time.sleep(0.1) # Briefly sleep to prevent CPU pegging
+                time.sleep(0.1)
         self.tokens -= 1
 
+def create_temp_cert(env_var_name, file_name):
+    cert_data = os.getenv(env_var_name)
+    if not cert_data:
+        raise ValueError(f"Missing environment variable from Infisical: {env_var_name}")
+    
+    # Handle potential escaped newlines from the vault
+    cert_data = cert_data.replace('\\n', '\n')
+    
+    temp_dir = tempfile.gettempdir()
+    file_path = os.path.join(temp_dir, file_name)
+    with open(file_path, 'w') as f:
+        f.write(cert_data)
+    return file_path
+
 def main():
-    # Aiven Kafka connection configuration
+    print("Constructing SSL certificates from environment variables...")
+    ca_path = create_temp_cert("KAFKA_CA_PEM", "ca.pem")
+    cert_path = create_temp_cert("KAFKA_SERVICE_CERT", "service.cert")
+    key_path = create_temp_cert("KAFKA_SERVICE_KEY", "service.key")
+
     producer = KafkaProducer(
         bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
         security_protocol="SSL",
-        ssl_cafile="ca.pem",
-        ssl_certfile="service.cert",
-        ssl_keyfile="service.key",
+        ssl_cafile=ca_path,
+        ssl_certfile=cert_path,
+        ssl_keyfile=key_path,
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
     )
 
     print("Loading Feedzai dataset...")
     df = pd.read_csv('data/raw/Base.csv')
     
-    # Hard limit to 5 transactions per second
     limiter = TokenBucketRateLimiter(rate_limit_per_second=5)
     
     print("Starting rate-limited data stream...")
