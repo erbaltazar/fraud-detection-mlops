@@ -5,6 +5,7 @@ __pycache__/
 
 # Data (Strictly ignore raw and processed data)
 data/
+!data/raw/Base.zip
 *.csv
 *.parquet
 
