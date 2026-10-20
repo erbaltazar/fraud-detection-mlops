@@ -3,6 +3,7 @@ kind: Job
 metadata:
   name: kafka-data-stream
 spec:
+  suspend: true
   template:
     spec:
       containers:
