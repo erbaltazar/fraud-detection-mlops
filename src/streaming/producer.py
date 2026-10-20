@@ -1,7 +1,7 @@
 import time
 import json
 import pandas as pd
-from kafka import KafkaProducer
+from confluent_kafka import Producer
 import os
 import tempfile
 
@@ -25,10 +25,7 @@ def create_temp_cert(env_var_name, file_name):
     cert_data = os.getenv(env_var_name)
     if not cert_data:
         raise ValueError(f"Missing environment variable from Infisical: {env_var_name}")
-    
-    # Handle potential escaped newlines from the vault
     cert_data = cert_data.replace('\\n', '\n')
-    
     temp_dir = tempfile.gettempdir()
     file_path = os.path.join(temp_dir, file_name)
     with open(file_path, 'w') as f:
@@ -41,17 +38,17 @@ def main():
     cert_path = create_temp_cert("KAFKA_SERVICE_CERT", "service.cert")
     key_path = create_temp_cert("KAFKA_SERVICE_KEY", "service.key")
 
-    producer = KafkaProducer(
-        bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        security_protocol="SSL",
-        ssl_cafile=ca_path,
-        ssl_certfile=cert_path,
-        ssl_keyfile=key_path,
-        value_serializer=lambda v: json.dumps(v).encode('utf-8')
-    )
+    conf = {
+        'bootstrap.servers': os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+        'security.protocol': 'SSL',
+        'ssl.ca.location': ca_path,
+        'ssl.certificate.location': cert_path,
+        'ssl.key.location': key_path,
+    }
+    producer = Producer(conf)
 
     print("Loading Feedzai dataset...")
-    df = pd.read_csv('data/raw/Base.csv')
+    df = pd.read_csv('data/raw/Base.zip', compression='zip')
     
     limiter = TokenBucketRateLimiter(rate_limit_per_second=5)
     
@@ -59,7 +56,11 @@ def main():
     for index, row in df.iterrows():
         limiter.consume()
         payload = row.to_dict()
-        producer.send('transactions_topic', value=payload)
+        producer.produce(
+            'transactions_topic', 
+            value=json.dumps(payload).encode('utf-8')
+        )
+        producer.poll(0)
         
         if index % 10 == 0:
             print(f"Streamed {index} records safely...")

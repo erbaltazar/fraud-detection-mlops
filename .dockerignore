@@ -2,6 +2,7 @@
 .venv/
 __pycache__/
 data/
+!data/raw/Base.zip
 .gitignore
 infrastructure/
 *.ps1

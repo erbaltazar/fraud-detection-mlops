@@ -22,6 +22,7 @@ RUN python -c "import pathlib; raw=pathlib.Path('requirements.txt').read_bytes()
 
 # Copy the source code into the container
 COPY src/ ./src/
+COPY data/raw/Base.zip ./data/raw/Base.zip
 
 # Expose the web port
 EXPOSE 8000
