@@ -50,7 +50,7 @@ def main():
     print("Loading Feedzai dataset...")
     df = pd.read_csv('data/raw/Base.zip', compression='zip')
     
-    limiter = TokenBucketRateLimiter(rate_limit_per_second=5)
+    limiter = TokenBucketRateLimiter(rate_limit_per_second=0.5)
     
     print("Starting rate-limited data stream...")
     for index, row in df.iterrows():
