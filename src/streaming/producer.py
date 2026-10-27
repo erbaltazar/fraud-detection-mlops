@@ -61,7 +61,7 @@ def main():
             value=json.dumps(payload).encode('utf-8')
         )
         producer.poll(0)
-        
+        print(f"Sent transaction: {payload.get('transaction_id', index)}")
         if index % 10 == 0:
             print(f"Streamed {index} records safely...")
             
