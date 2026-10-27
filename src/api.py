@@ -5,6 +5,7 @@ import mlflow.pyfunc
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from feast import FeatureStore
+from src.tasks import generate_fraud_explanation
 
 # Global state
 store = None
@@ -45,7 +46,7 @@ class TransactionRequest(BaseModel):
     transaction_id: str
 
 @app.post("/predict")
-async def predict(request: TransactionRequest):
+def predict(request: TransactionRequest):
     if not model or not store:
         raise HTTPException(status_code=503, detail="Model or Feature Store not fully initialized.")
 
@@ -63,19 +64,24 @@ async def predict(request: TransactionRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Feast retrieval failed: {e}")
 
-    # 3. Fix: Explicitly filter columns for the model
     expected_columns = ["income", "name_email_similarity", "payment_type", "device_os"]
     
     try:
-        # Drops the transaction_id and passes only the 4 features XGBoost expects
         model_input_df = feature_df[expected_columns]
         prediction = model.predict(model_input_df)
+        prob = float(prediction[0])
         
+        # Enqueue explanation only if high-risk threshold is breached
+        if prob > 0.85:
+            generate_fraud_explanation(
+                request.transaction_id, 
+                prob, 
+                model_input_df.iloc[0].to_dict()
+            )
+            
         return {
             "transaction_id": request.transaction_id,
-            "fraud_probability": float(prediction[0])
+            "fraud_probability": prob
         }
     except KeyError as e:
         raise HTTPException(status_code=500, detail=f"Missing expected features from Feast: {e}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Inference failed: {e}")

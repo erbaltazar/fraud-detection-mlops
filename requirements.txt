@@ -14,6 +14,8 @@ annotated-types==0.8.0
     # via pydantic
 anyio==4.14.1
     # via
+    #   groq
+    #   httpx
     #   mlflow-skinny
     #   starlette
     #   watchfiles
@@ -32,7 +34,10 @@ cachetools==7.2.1
     #   mlflow-skinny
     #   mlflow-tracing
 certifi==2026.6.17
-    # via requests
+    # via
+    #   httpcore
+    #   httpx
+    #   requests
 cffi==2.0.0
     # via cryptography
 charset-normalizer==3.4.7
@@ -68,6 +73,8 @@ databricks-sdk==0.148.0
     #   mlflow-tracing
 dill==0.3.9
     # via feast
+distro==1.9.0
+    # via groq
 docker==7.2.0
     # via mlflow
 fastapi==0.141.1
@@ -105,20 +112,29 @@ graphql-core==3.2.13
     #   graphql-relay
 graphql-relay==3.2.0
     # via graphene
+groq==1.7.0
+    # via -r requirements.in
 gunicorn==26.2.0
     # via
     #   feast
     #   mlflow
     #   uvicorn-worker
 h11==0.16.0
-    # via uvicorn
+    # via
+    #   httpcore
+    #   uvicorn
+httpcore==1.0.9
+    # via httpx
 httptools==0.8.0
     # via uvicorn
+httpx==0.28.1
+    # via groq
 huey==3.4.0
     # via mlflow
 idna==3.18
     # via
     #   anyio
+    #   httpx
     #   requests
     #   yarl
 importlib-metadata==9.0.1
@@ -254,6 +270,7 @@ pydantic==2.13.4
     # via
     #   fastapi
     #   feast
+    #   groq
     #   mlflow-skinny
     #   mlflow-tracing
 pydantic-core==2.46.4
@@ -305,6 +322,8 @@ skops==0.16.0
     # via mlflow
 smmap==5.0.3
     # via gitdb
+sniffio==1.3.1
+    # via groq
 sqlalchemy==2.1.3
     # via
     #   alembic
@@ -340,6 +359,7 @@ typing-extensions==4.16.0
     #   alembic
     #   fastapi
     #   graphene
+    #   groq
     #   mlflow-skinny
     #   mypy
     #   opentelemetry-api

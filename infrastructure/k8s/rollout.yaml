@@ -1,5 +1,5 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: fraud-detection-api
   namespace: default
@@ -7,6 +7,11 @@ metadata:
     app: fraud-api
 spec:
   replicas: 2
+  strategy:
+    canary:
+      steps:
+        - setWeight: 10
+        - pause: {} # Pauses indefinitely for Evidently AI drift monitoring
   selector:
     matchLabels:
       app: fraud-api
@@ -23,16 +28,12 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
-          
-          # Infisical Operator Integration
           envFrom:
             - secretRef:
                 name: fraud-api-secrets
           env:
             - name: MLFLOW_TRACKING_URI
               value: "http://mlflow-service:5000"
-              
-          # Strict constraints for your 12GB ARM node
           resources:
             requests:
               cpu: "250m"
@@ -40,7 +41,6 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
-              
           readinessProbe:
             httpGet:
               path: /openapi.json

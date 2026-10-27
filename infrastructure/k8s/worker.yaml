@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fraud-xai-worker
+  namespace: default
+  labels:
+    app: xai-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xai-worker
+  template:
+    metadata:
+      labels:
+        app: xai-worker
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: worker
+          image: ghcr.io/erbaltazar/fraud-detection-mlops:latest
+          command: ["huey_consumer.py", "src.tasks.huey", "-w", "2"]
+          envFrom:
+            - secretRef:
+                name: fraud-api-secrets
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
