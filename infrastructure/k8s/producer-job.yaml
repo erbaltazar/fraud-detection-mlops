@@ -10,6 +10,9 @@ spec:
       - name: producer
         image: ghcr.io/erbaltazar/fraud-detection-mlops:latest
         command: ["python", "src/streaming/producer.py"]
+        env:
+        - name: PYTHONUNBUFFERED
+          value: "1"
         envFrom:
         - secretRef:
             name: fraud-api-secrets
