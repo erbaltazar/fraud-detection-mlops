@@ -24,6 +24,9 @@ spec:
           envFrom:
             - secretRef:
                 name: fraud-api-secrets
+          env:
+            - name: PYTHONPATH
+              value: "/app"
           resources:
             requests:
               cpu: "100m"
