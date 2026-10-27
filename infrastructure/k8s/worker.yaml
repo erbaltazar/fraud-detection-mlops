@@ -20,7 +20,7 @@ spec:
       containers:
         - name: worker
           image: ghcr.io/erbaltazar/fraud-detection-mlops:latest
-          command: ["huey_consumer.py", "src.tasks.huey", "-w", "2"]
+          command: ["huey_consumer", "src.tasks.huey", "-w", "2"]
           envFrom:
             - secretRef:
                 name: fraud-api-secrets
