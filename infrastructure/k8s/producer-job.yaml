@@ -9,7 +9,6 @@ spec:
       containers:
       - name: producer
         image: ghcr.io/erbaltazar/fraud-detection-mlops:latest
-        imagePullPolicy: Always
         command: ["python", "src/streaming/producer.py"]
         env:
         - name: PYTHONUNBUFFERED
