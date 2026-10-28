@@ -8,6 +8,7 @@ import tempfile
 class TokenBucketRateLimiter:
     def __init__(self, rate_limit_per_second):
         self.rate_limit = rate_limit_per_second
+        self.capacity = max(1.0, rate_limit_per_second)
         self.tokens = rate_limit_per_second
         self.last_updated = time.time()
 
@@ -15,7 +16,7 @@ class TokenBucketRateLimiter:
         while self.tokens < 1:
             now = time.time()
             elapsed = now - self.last_updated
-            self.tokens = min(self.rate_limit, self.tokens + elapsed * self.rate_limit)
+            self.tokens = min(self.capacity, self.tokens + elapsed * self.rate_limit)
             self.last_updated = now
             if self.tokens < 1:
                 time.sleep(0.1)
