@@ -6,7 +6,7 @@ metadata:
   labels:
     app: xai-worker
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: xai-worker
@@ -20,7 +20,7 @@ spec:
       containers:
         - name: worker
           image: ghcr.io/erbaltazar/fraud-detection-mlops:latest
-          command: ["huey_consumer", "src.tasks.huey", "-w", "2"]
+          command: ["huey_consumer", "src.tasks.huey", "-w", "2", "-d", "1.0"]
           envFrom:
             - secretRef:
                 name: fraud-api-secrets
